@@ -417,8 +417,4 @@ public final class OpFeatures {
         }
         return true;
     }
-
-    public static int isBlackModeOn() {
-        return 1;
-    }
 }
