@@ -23,7 +23,7 @@
 namespace vendor {
 namespace lineage {
 namespace touch {
-namespace V1_0 {
+namespace {
 namespace implementation {
 
 const std::map<int32_t, TouchscreenGesture::GestureInfo> kGestureInfoMap = {
@@ -39,7 +39,7 @@ const std::map<int32_t, TouchscreenGesture::GestureInfo> kGestureInfoMap = {
 };
 
 }  // namespace implementation
-}  // namespace V1_0
+}  // namespace
 }  // namespace touch
 }  // namespace lineage
 }  // namespace vendor

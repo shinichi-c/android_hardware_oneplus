@@ -14,25 +14,25 @@
 // limitations under the License.
 
 filegroup {
-    name: "vendor.lineage.touch@1.0-oneplus-touchgesture",
+    name: "vendor.lineage.touch-oneplus-touchgesture",
     srcs: ["TouchscreenGesture.cpp"],
 }
 
 cc_library_headers {
-    name: "vendor.lineage.touch@1.0-oneplus-headers",
+    name: "vendor.lineage.touch-oneplus-headers",
     vendor_available: true,
     export_include_dirs: ["."],
 }
 
 cc_binary {
-    name: "vendor.lineage.touch@1.0-service.oneplus",
+    name: "vendor.lineage.touch-service.oneplus",
     defaults: ["hidl_defaults"],
-    init_rc: ["vendor.lineage.touch@1.0-service.oneplus.rc"],
-    vintf_fragments: ["vendor.lineage.touch@1.0-service.oneplus.xml"],
+    init_rc: ["vendor.lineage.touch-service.oneplus.rc"],
+    vintf_fragments: ["vendor.lineage.touch-service.oneplus.xml"],
     vendor: true,
     relative_install_path: "hw",
     srcs: [
-        ":vendor.lineage.touch@1.0-oneplus-touchgesture",
+        ":vendor.lineage.touch-oneplus-touchgesture",
         "service.cpp",
     ],
     shared_libs: [
@@ -40,10 +40,10 @@ cc_binary {
         "libbinder",
         "libhidlbase",
         "libutils",
-        "vendor.lineage.touch@1.0",
+        "vendor.lineage.touch",
     ],
     header_libs: [
-        "vendor.lineage.touch@1.0-oneplus-headers",
+        "vendor.lineage.touch-oneplus-headers",
     ],
     include_dirs: select(soong_config_variable("ONEPLUS_LINEAGE_TOUCH_HAL", "INCLUDE_DIR"), {
         any @ flag_val: [flag_val],
