@@ -18,7 +18,7 @@ on boot
     chown system system /proc/touchpanel/right_arrow_enable
     chown system system /proc/touchpanel/single_tap_enable
 
-service vendor.touch-hal /vendor/bin/hw/vendor.lineage.touch-service.oplus
+service vendor.touch-hal /vendor/bin/hw/vendor.lineage.touch-service.oneplus
     class hal
     user system
     group system
