@@ -17,40 +17,30 @@
 #define LOG_TAG "vendor.lineage.touch-service.oneplus"
 
 #include <android-base/logging.h>
+#include <android/binder_manager.h>
+#include <android/binder_process.h>
 #include <binder/ProcessState.h>
-#include <binder/IPCThreadState.h> // For joinThreadPool
-#include <android/binder/Manager.h> // For AServiceManager::addService
 
-// Include the generated AIDL header
-#include <vendor/lineage/touch/ITouchscreenGesture.h>
-#include "TouchscreenGesture.h" // Your implementation class
+#include "TouchscreenGesture.h"
 
-using vendor::lineage::touch::ITouchscreenGesture;
-using vendor::lineage::touch::implementation::TouchscreenGesture; // Assuming your implementation is in this namespace
+using aidl::vendor::lineage::touch::TouchscreenGesture;
 
 int main() {
-    // Enable AIBinder C++ backend for libbinder
-    // This is often needed for new AIDL services.
-    ABinderProcess_set
-    ProcessState::self()->set,
-    ABinderProcess_set
-    // Old way for binder setup, replaced by AServiceManager::addService
-    // android::hardware::configureRpcThreadpool(1, true /*callerWillJoin*/);
-
-    android::sp<TouchscreenGesture> gestureService = new TouchscreenGesture();
-
-    // Register the service with AServiceManager
-    if (AServiceManager_addService(gestureService->asBinder().get(),
-                                   ITouchscreenGesture::descriptor) != STATUS_OK) {
-        LOG(ERROR) << "Cannot register touchscreen gesture HAL service.";
+    ABinderProcess_setThreadPoolMaxThreadCount(0);
+    std::shared_ptr<TouchscreenGesture> service = ndk::SharedRefBase::make<TouchscreenGesture>();
+    
+    const std::string instance = std::string(TouchscreenGesture::descriptor) + "/default";
+    binder_status_t status = AServiceManager_addService(service->asBinder().get(), instance.c_str());
+    
+    if (status != STATUS_OK) {
+        LOG(ERROR) << "Cannot register touchscreen gesture HAL service: " << status;
         return 1;
     }
 
-    LOG(INFO) << "Touchscreen HAL service ready.";
-
-    // Start the binder thread pool and join it
-    IPCThreadState::self()->joinThreadPool();
-
-    LOG(ERROR) << "Touchscreen HAL service failed to join thread pool.";
+    LOG(INFO) << "Touchscreen HAL service ready: " << instance;
+    ABinderProcess_joinThreadPool();
+    
+    // Should never reach here
+    LOG(ERROR) << "Touchscreen HAL service exited unexpectedly";
     return 1;
 }

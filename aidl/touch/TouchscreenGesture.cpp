@@ -21,17 +21,14 @@
 #include <unistd.h>
 #include <fstream>
 
-#define LOG_TAG "TouchscreenGestureService"
+namespace aidl {
+namespace vendor {
+namespace lineage {
+namespace touch {
 
-namespace {
+using ::ndk::ScopedAStatus;
 
-struct GestureInfo {
-    int keycode;
-    std::string name;
-    std::string path;
-};
-
-const std::map<int32_t, GestureInfo> kGestureInfoMap = {
+const std::map<int32_t, TouchscreenGesture::GestureInfo> TouchscreenGesture::kGestureInfoMap = {
     {0, {251, "Two fingers down swipe", "/proc/touchpanel/double_swipe_enable"}},
     {1, {252, "Down arrow", "/proc/touchpanel/down_arrow_enable"}},
     {2, {253, "Left arrow", "/proc/touchpanel/left_arrow_enable"}},
@@ -43,39 +40,32 @@ const std::map<int32_t, GestureInfo> kGestureInfoMap = {
     {8, {255, "Single Tap", "/proc/touchpanel/single_tap_enable"}},
 };
 
-}  // anonymous namespace
-
-namespace aidl {
-namespace vendor {
-namespace lineage {
-namespace touch {
-
-using ::ndk::ScopedAStatus;
-
-ScopedAStatus TouchscreenGesture::getSupportedGestures(std::vector<Gesture>* _aidl_return) {
+ScopedAStatus TouchscreenGesture::getSupportedGestures(std::vector<Gesture>* out) {
     for (const auto& [id, info] : kGestureInfoMap) {
         if (access(info.path.c_str(), F_OK) == 0) {
             Gesture gesture;
             gesture.id = id;
             gesture.name = info.name;
             gesture.keycode = info.keycode;
-            _aidl_return->push_back(std::move(gesture));
+            out->push_back(gesture);
         }
     }
     return ScopedAStatus::ok();
 }
 
-ScopedAStatus TouchscreenGesture::setGestureEnabled(int32_t gestureId, bool enabled, bool* _aidl_return) {
+ScopedAStatus TouchscreenGesture::setGestureEnabled(int32_t gestureId, bool enabled, bool* success) {
     auto it = kGestureInfoMap.find(gestureId);
     if (it == kGestureInfoMap.end()) {
-        *_aidl_return = false;
+        *success = false;
         return ScopedAStatus::ok();
     }
 
     std::ofstream file(it->second.path);
     file << (enabled ? "1" : "0");
-    *_aidl_return = !file.fail();
-    LOG(DEBUG) << "Wrote file " << it->second.path << " fail " << file.fail();
+    *success = !file.fail();
+    
+    LOG(DEBUG) << "Wrote file " << it->second.path 
+               << " fail " << file.fail();
     return ScopedAStatus::ok();
 }
 

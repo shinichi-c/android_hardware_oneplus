@@ -10,20 +10,16 @@ namespace lineage {
 namespace touch {
 
 class TouchscreenGesture : public BnTouchscreenGesture {
-  public:
-    // Internal gesture information structure
+public:
+    ::ndk::ScopedAStatus getSupportedGestures(std::vector<Gesture>* out) override;
+    ::ndk::ScopedAStatus setGestureEnabled(int32_t gestureId, bool enabled, bool* success) override;
+
+private:
     struct GestureInfo {
         int keycode;
-        const char* name;
-        const char* path;
+        std::string name;
+        std::string path;
     };
-
-    ::ndk::ScopedAStatus getSupportedGestures(std::vector<Gesture>* out) override;
-    ::ndk::ScopedAStatus setGestureEnabled(const Gesture& gesture, 
-                                           bool enabled,
-                                           bool* success) override;
-
-  private:
     static const std::map<int32_t, GestureInfo> kGestureInfoMap;
 };
 
