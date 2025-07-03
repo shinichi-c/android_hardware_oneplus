@@ -28,8 +28,8 @@ cc_binary {
     name: "vendor.lineage.touch-service.oneplus",
     relative_install_path: "hw",
     vendor: true,
-    init_rc: ["oneplus.rc"],
-    vintf_fragments: ["oneplus.xml"],
+    init_rc: ["vendor.lineage.touch-service.oneplus.rc"],
+    vintf_fragments: ["vendor.lineage.touch-service.oneplus.xml"],
     srcs: [
         ":vendor.lineage.touch-service-oneplus-touchgesture",
         "service.cpp",
