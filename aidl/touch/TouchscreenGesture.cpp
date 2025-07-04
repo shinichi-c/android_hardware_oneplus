@@ -53,19 +53,20 @@ ScopedAStatus TouchscreenGesture::getSupportedGestures(std::vector<Gesture>* out
     return ScopedAStatus::ok();
 }
 
-ScopedAStatus TouchscreenGesture::setGestureEnabled(int32_t gestureId, bool enabled, bool* success) {
-    auto it = kGestureInfoMap.find(gestureId);
+ScopedAStatus TouchscreenGesture::setGestureEnabled(const Gesture& gesture, bool enabled) {
+    auto it = kGestureInfoMap.find(gesture.id);
     if (it == kGestureInfoMap.end()) {
-        *success = false;
-        return ScopedAStatus::ok();
+        return ScopedAStatus::fromExceptionCode(EX_UNSUPPORTED_OPERATION);
     }
 
     std::ofstream file(it->second.path);
     file << (enabled ? "1" : "0");
-    *success = !file.fail();
     
-    LOG(DEBUG) << "Wrote file " << it->second.path 
-               << " fail " << file.fail();
+    if (file.fail()) {
+        LOG(ERROR) << "Failed to write to " << it->second.path;
+        return ScopedAStatus::fromExceptionCode(EX_ILLEGAL_STATE);
+    }
+    
     return ScopedAStatus::ok();
 }
 
